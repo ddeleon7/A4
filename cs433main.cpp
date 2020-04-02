@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	cout << "CS433: Programming Assignment 4" << endl;
 	cout << "Authors: Dionisio de Leon and James Foerster" << endl;
 	cout << "Due Date: 04/28/2020" << endl;
-	cout << "Course: CS433 (Operating Systems)"
+	cout << "Course: CS433 (Operating Systems)";
 	cout << "This program is to implement the Producer-Consumer problem using pthreads" << endl;
 	cout << "---------------------------------------------------" << endl << endl;
 
