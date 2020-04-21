@@ -1,16 +1,13 @@
 /******************************************************
-how to compile: g++ main.cpp -lpthread (enter)
-(-lpthread enables us to use sem_init)
-
 how to run this code:
 make a makefile
 ./prog4 X X X
 X = int greater than 0
 
- ****************************************************/
+****************************************************/
 #include <stdio.h>
 #include <stdlib.h>    //Required for rand()
-#include <unistd.h>    //Required for sleep()  
+#include <unistd.h>    //Required for sleep()
 #include <pthread.h>   // Required for pthreads (pthread_mutex_t)
 #include <semaphore.h> // Required for semaphores (sem_t, sem_init)
 #include <iostream>
@@ -46,7 +43,7 @@ Parameters:
 int argc = amount of arguments
 char *argv[] = an array of characters
 
- *******************************************************************/
+*******************************************************************/
 int main(int argc, char *argv[])
 {
   cout << "---------------------------------------------------" << endl;
@@ -54,8 +51,11 @@ int main(int argc, char *argv[])
   cout << "Authors: Dionisio de Leon and James Foerster" << endl;
   cout << "Due Date: 04/28/2020" << endl;
   cout << "Course: CS433 (Operating Systems)";
-  cout << "This program is to implement the Producer-Consumer problem using pthreads" << endl;
-  cout << "---------------------------------------------------" << endl << endl;
+  cout << "This program is to implement the Producer-Consumer problem using pth\
+re\
+ads" << endl;
+  cout << "---------------------------------------------------" << endl << endl\
+;
 
   if(argc != 4)
     {
@@ -75,11 +75,12 @@ int main(int argc, char *argv[])
     }
 
   //testing to see if the user input matches with everythinng else so far
-  cout << "Sleep time: " << main_sleep_time << endl;
+ cout << "Sleep time: " << main_sleep_time << endl;
   cout << "# of producer threads: " << numProducer << endl;
   cout << "# of consumer threads: " << numConsumer << endl;
 
   //figure out how to make a mutex and semaphore
+  cout << "create mutex/semaphore" << endl;
   init();
 
   //creating threads for pthread_create() - used to create a new thread
@@ -91,13 +92,15 @@ int main(int argc, char *argv[])
   //1) thread id 2)thread attribute (NULL = default attributes
   //3) start - thread begins executing code at this address
   //4) argument passed to start (NULL)
-  
+
+
   int i = 0;
 
+  cout <<"test1" << endl;
   while(i < numProducer)//creating producer threads
     {
-      cout << "test: create producer" << endl;
-      pthread_create(&p_threads[i], NULL, producer , NULL);
+      cout << "test: create Numproducer" << endl;
+      // pthread_create(&p_threads[i], NULL, producer , NULL);
       i++;
     }
 
@@ -105,7 +108,7 @@ int main(int argc, char *argv[])
 
   while(y < numConsumer)//creating consumer threads
     {
-      cout << "test: create consumer" << endl;
+      cout << "test: create Numconsumer" << endl;
       //pthread_create(c_threds[i], NULL, consumer, NULL);
       y++;
     }
@@ -119,82 +122,88 @@ int main(int argc, char *argv[])
 code from the book
 
 purpose: initializing everthing
- *******************************************/
+*******************************************/
 void init()
 {
+  cout <<"test init()" << endl;
   pthread_mutex_init(&mutex, NULL);//Create mutex LOCK
-  sem_init(&empty, 0, 5);//create empty semaphore w/ buffer size = 5
-  sem_init(&full, 0, 0);//create full semaphore
+  //sem_init(&empty, 0, 5);//create empty semaphore w/ buffer size = 5
+  //sem_init(&full, 0, 0);//create full semaphore
 }
 
 /**********************************************************
 Purpose: pointer to producer function to create a thread
+The sleep fuction means the
 
-Parameter: arg is passed into producer from the argument in pthreads_create() NULL 
- ******************************************************/
+Parameter: arg is passed into producer from the argument in pthreads_create() N\
+UL\
+L
+******************************************************/
 void *producer(void *arg)
 {
+  cout <<"*producer()" << endl;
+
   int item;//from the book
-  
+
   while(true)
     {
       //sleep for random period of time
       sleep(rand() % main_sleep_time);
-      sem_wait(&empty);//something from the book
+      //  sem_wait(&empty);//something from the book
       pthread_mutex_lock(&mutex);//acquire the mutex lock
-
-      //start of critical section
+ //start of critical section
       item = rand() % 100;//random number generation(i randomly picked 100)
-      
-      //not printing...
+
+      //not printing..., but it might be the functions that I commmented out th\
+at are preventing the code form going here
       if(insert(item) == true)//book
-	{
-	  cout << "test" << endl;
-	  printf("test");
-	  printBuffer();
-	}
+        {
+          cout << "test" << endl;
+          printBuffer();
+        }
       else
-	cout << "test: item cannot be inserted by producer: " << item << endl;
+        cout << "test: item cannot be inserted by producer: " << item << endl;
 
       //end of critical section
       pthread_mutex_unlock(&mutex);//from the book
-      sem_post(&full);
+      //sem_post(&full);
     }
 }
 /****************************************************************
 Purpose:
 
 
- **************************************************************/
+**************************************************************/
 void *consumer(void *arg)
 {
-  int item;
+  cout << "*consumer()" << endl;
+
+    int item;
   while(true)
     {
       sleep(rand() % main_sleep_time);
-      sem_wait(&full);
+      //sem_wait(&full);
       pthread_mutex_lock(&mutex);
-      
-      //Start of critical section
+  //Start of critical section
       cout << "start of critical section" << endl;
+      //item = remove();
       if(item != false)
-	{
-	  cout << item << endl;
-	  cout << "test" << endl;
-	  printf("printf test\n ");
-	  printBuffer();
-	}
+        {
+          cout << item << endl;
+          cout << "test" << endl;
+          printBuffer();
+        }
       else
-	{
-	  cout << item << endl;
-	  cout << "test: print" << endl;
-	}
+        {
+          cout << item << endl;
+          cout << "test: print" << endl;
+        }
 
       //End of Critical section
       cout << " end of critical section" << endl;
-      pthead_mutex_unlock(&mutex);
-      sem_post(&empty);
-
+      pthread_mutex_unlock(&mutex);
+      //sem_post(&empty);
+    }
 }
 /********************************************************
 purpose: Remove the first element from the buffer. Return this removed element
@@ -203,6 +212,8 @@ parameter: int item = item that gets inserted into buffer
 **********************************************************/
 int insert(int item)
 {
+  cout <<"calling insert()" << endl;
+
   if(!isFull())//assuming buffer isn't full, then insert item
     {
       buffer.push_back(item);
@@ -212,24 +223,27 @@ int insert(int item)
   else
     return false;
 }
-
 /**********************************************************************
 Purpose: Prints out the buffer
- ********************************************************************/
+********************************************************************/
 void printBuffer()
 {
-  printf("test123\n");
+  cout <<"printBuffer()" << endl;
+
   cout << "[";
   for(int i = 0; i < buffer.size(); i++)
     cout << buffer.at(i) << " " << endl;
   cout << " ]" << endl;
 }
-
 /********************************************************
-purpose: Removes the first element of the buffer. This function returns that removed element
+purpose: Removes the first element of the buffer. This function returns that re\
+mo\
+ved element
 *********************************************************/
 int remove()
 {
+  cout <<"calling remove()" << endl;
+
   int temp;
 
   if(!isEmpty())//if buffer is not empty, remove first item
@@ -240,10 +254,9 @@ int remove()
   else
     return false;
 }
-
 /*********************************************************
 Purpose: Checking the buffer if its full. Count has to be a value less than 5
- ***********************************************/
+***********************************************/
 bool isFull()
 {
   if(count < 5)
@@ -253,13 +266,12 @@ bool isFull()
 
 /****************************************************************
 Purpose: Checking if the buffer is empty. Count must not equal 0
- **************************************************************/
- bool isEmpty()
+**************************************************************/
+bool isEmpty()
 {
   if(count != 0)
     return false;
   return true;
 }
-
 
 
