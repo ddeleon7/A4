@@ -3,7 +3,7 @@
 # 
 #
 ###################################
-CC = g++                        # use g++ for compiling c++ code or gcc for c code
+CC = g++  -lpthread                      # use g++ for compiling c++ code or gcc for c code
 CFLAGS = -g -Wall -std=c++11            # compilation flags: -g for debugging. Cha\
 nge to -O2 or -O3 for optimized code.
 LIB =  -lm                      # linked libraries
