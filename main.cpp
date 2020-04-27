@@ -13,7 +13,6 @@ This program is made to demonstrate the implementation of the Producer-Consumer 
 #include <iostream>
 #include <sys/wait.h> //Required for wait()
 #include <vector>
-
 using namespace std;
 
 //initializing variables
@@ -135,14 +134,11 @@ void *producer(void *arg)
       //start of critical section
       item = rand() % 100;
       
-      if(insert(item) == true)//book
-        {
-	  cout <<"item " << item << " inserted by a producer"<< endl;
-	  printBuffer();
-        }
-      else
-        cout <<"item " << item << " cannot be inserted by a producer"<< endl;
-
+      if(insert(item) == true){
+	cout <<"item " << item << " inserted by a producer"<< endl;
+      printBuffer();
+      }
+      
       //end of critical section
       
       pthread_mutex_unlock(&mutex);//releasing mutex lock
@@ -159,22 +155,16 @@ void *consumer(void *arg)
   int item;
   while(true)
     {
-      sleep(rand() % main_sleep_time);
+      sleep(rand() % main_sleep_time);//sleep for randoom time
       sem_wait(&full);
-      pthread_mutex_lock(&mutex);
+      pthread_mutex_lock(&mutex);//acquiring the mutex locked
 
       //Start of critical section
       item = remove();
-      if(item != false)
-        {
-	  cout <<"Item " << item << " removed by a consumer" << endl;
-          printBuffer();
-        }
-      else
-        {
-          cout <<"Item " << item << " cannot be removed by a consumer" << endl;
-        }
 
+      cout <<"Item " << item << " removed by a consumer" << endl;
+      printBuffer();
+      
       //End of Critical section
       pthread_mutex_unlock(&mutex);//releasing mutex lock
       sem_post(&empty);//unlocks semaphore
@@ -203,8 +193,11 @@ void printBuffer()
 {
   cout << "The current content of the buffer is[";
   for(int i = 0; i < buffer.size(); i++)
+    {
 	cout << buffer.at(i) << " ";
-  cout << " ]" << endl << endl;
+    }
+
+  cout << "]" << endl << endl;
 }
 
 /********************************************************
