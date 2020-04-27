@@ -1,8 +1,9 @@
 /******************************************************
-how to run this code:
-make a makefile
-./prog4 X X X
-X = int greater than 0
+Names Dionisio de Leon and James Foerster
+CS 433 Operating systems
+Due 4/30/20
+
+This program is made to demonstrate the implementation of the Producer-Consumer problem using pthreads
 ****************************************************/
 #include <stdio.h>
 #include <stdlib.h>    //Required for rand()
@@ -51,8 +52,7 @@ int main(int argc, char *argv[])
   cout << "Authors: Dionisio de Leon and James Foerster" << endl;
   cout << "Due Date: 04/30/2020" << endl;
   cout << "Course: CS433 (Operating Systems)";
-  cout << "This program is to implement the Producer-Consumer problem using pthre\
-ads" << endl;
+  cout << "This program is made to show the implementation of the Producer-Consumer problem using pthreads" << endl;
   cout << "---------------------------------------------------" << endl << endl;
 
   if(argc != 4)
@@ -72,11 +72,6 @@ ads" << endl;
       return 0;
     }
 
-  //testing to see if the user input matches with everythinng else so far
-  cout << "Sleep time: " << main_sleep_time << endl;
-  cout << "# of producer threads: " << numProducer << endl;
-  cout << "# of consumer threads: " << numConsumer << endl;
-
   //Creating mutexes and semaphores
   init();
 
@@ -94,9 +89,7 @@ ads" << endl;
 
   while(i < numProducer)//creating producer threads
     {
-      cout << "test: create Numproducer" << endl;
       pthread_create(&p_threads[i], NULL, producer , NULL);
-      cout <<"test: D" << endl;
       i++;
     }
 
@@ -104,10 +97,11 @@ ads" << endl;
 
   while(z < numConsumer)//creating consumer threads
     {
-      cout << "test: create Numconsumer" << endl;
       pthread_create(&c_threads[z], NULL, consumer, NULL);
       z++;
     }
+
+  sleep(main_sleep_time);
 
   return 0;
 }
@@ -118,7 +112,6 @@ purpose: creating and initializing mutex and semaphores
 *******************************************/
 void init()
 {
-  cout <<"test init()" << endl;
   pthread_mutex_init(&mutex, NULL);//Creating mutex lock
   sem_init(&empty, 0, 5);//creating empty semaphore w/ buffer size = 5
   sem_init(&full, 0, 0);//creating full semaphore
@@ -131,21 +124,17 @@ Parameter: arg is passed into producer from the argument in pthreads_create(), w
 ******************************************************/
 void *producer(void *arg)
 {
-  cout <<"calling *producer()" << endl;
-
   int item;
 
   while(true)
     {
-      cout <<"while loop" << endl;
       sleep(rand() % main_sleep_time);//sleep for random period of time
       sem_wait(&empty);
       pthread_mutex_lock(&mutex);//acquiring the mutex lock
 
       //start of critical section
       item = rand() % 100;
-      cout <<"item: " << item << endl;
-
+      
       if(insert(item) == true)//book
         {
 	  cout <<"item " << item << " inserted by a producer"<< endl;
@@ -167,8 +156,6 @@ Parameter: *arg is passed into consumer from the 4th arugment in pthreads_create
 **************************************************************/
 void *consumer(void *arg)
 {
-  cout << "calling *consumer()" << endl;
-  
   int item;
   while(true)
     {
@@ -177,24 +164,20 @@ void *consumer(void *arg)
       pthread_mutex_lock(&mutex);
 
       //Start of critical section
-      
       item = remove();
       if(item != false)
         {
-          
-          cout << "test" << endl;
+	  cout <<"Item " << item << " removed by a consumer" << endl;
           printBuffer();
         }
       else
         {
-          cout << item << endl;
-          cout << "test: print" << endl;
+          cout <<"Item " << item << " cannot be removed by a consumer" << endl;
         }
 
       //End of Critical section
-      cout << " end of critical section" << endl;
-      pthread_mutex_unlock(&mutex);
-      sem_post(&empty);
+      pthread_mutex_unlock(&mutex);//releasing mutex lock
+      sem_post(&empty);//unlocks semaphore
     }
 }
 /********************************************************
@@ -204,8 +187,6 @@ parameter: int item = item that gets inserted into buffer
 **********************************************************/
 int insert(int item)
 {
-  cout <<"calling insert()" << endl;
-
   if(!isFull())//assuming buffer isn't full, then insert item
     {
       buffer.push_back(item);
@@ -220,12 +201,10 @@ Purpose: Prints out the buffer
 ********************************************************************/
 void printBuffer()
 {
-  cout <<"printBuffer()" << endl;
-
-  cout << "[";
+  cout << "The current content of the buffer is[";
   for(int i = 0; i < buffer.size(); i++)
-    cout << buffer.at(i) << " " << endl;
-  cout << " ]" << endl;
+	cout << buffer.at(i) << " ";
+  cout << " ]" << endl << endl;
 }
 
 /********************************************************
@@ -234,11 +213,9 @@ ved element
 *********************************************************/
 int remove()
 {
-  cout <<"calling remove()" << endl;
-
   int temp;
 
-  if(!isEmpty())//if buffer is not empty, remove first item
+  if(!isEmpty())//if buffer is not empty, remove first item from buffer
     {
       temp = buffer.front();
       buffer.erase(buffer.begin());
